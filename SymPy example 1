@@ -1,0 +1,17 @@
+import numpy as np
+from sympy import *
+
+# Define all the variables
+x = symbols("x")
+x_bar = symbols(r"$\bar x$")
+omega_0 = symbols(r"$\omega_0$")
+
+def h_2n(n_val, x_val, x_bar_val, omega_0_val):
+	return ((-1)**(n_val+1) * omega_0_val**2 / np.math.factorial(2*n_val)) * (1 / (2*omega_0_val))**n_val * (x_val + x_bar_val)**(2*n_val)
+
+h = omega_0 * x * x_bar
+
+for i in range(2,10):
+	h += h_2n(i, x, x_bar, omega_0)
+
+h
