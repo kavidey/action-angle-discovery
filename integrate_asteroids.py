@@ -8,7 +8,8 @@ import pandas as pd
 import rebound as rb
 import celmech as cm
 
-outer_only = True
+outer_only = False
+print(f"Outer Planets Only: {outer_only}")
 # %%
 integration_path = Path("integrations") / ("outer_planets" if outer_only else "full_system")
 integration_path.mkdir(parents=True, exist_ok=True)
@@ -25,13 +26,29 @@ labels = pd.read_fwf('proper_catalog24.dat', colspecs=[[0,10], [10,18], [19,28],
 
 merged_df = pd.merge(df, labels, on="Des'n", how="inner")
 # %%
+sim = rb.Simulation()
+date = "2023-09-13 12:00"
+sim.add("Sun", date=date)
+if not outer_only:
+    sim.add("Mercury", date=date)
+    sim.add("Venus", date=date)
+    sim.add("Earth", date=date)
+    sim.add("Mars", date=date)
+sim.add("Jupiter", date=date)
+sim.add("Saturn", date=date)
+sim.add("Uranus", date=date)
+sim.add("Neptune", date=date)
+sim.save_to_file(str(integration_path/"planets.bin"))
+# %%
 def run_sim(r):
     idx, row = r
-    sim = rb.Simulation('planets.bin')
-    if outer_only:
-        for i in range(4):
-            sim.remove(1)
+    # sim = rb.Simulation('planets.bin')
+    # if outer_only:
+    #     for i in range(4):
+    #         sim.remove(1)
+    sim = rb.Simulation(str(integration_path/'planets.bin'))
     sim.add(a=row['a'], e=row['e'], inc=row['Incl.']*np.pi/180, Omega=row['Node']*np.pi/180, omega=row['Peri.']*np.pi/180, M=row['M'], primary=sim.particles[0])
+    sim.move_to_com()
 
     ps = sim.particles
     ps[-1].a
@@ -50,5 +67,5 @@ def run_sim(r):
     sim.integrate(Tfin, exact_finish_time=0)
 # %%
 with Pool(20) as p:
-      p.map(run_sim, merged_df.iterrows())
+      p.map(run_sim, merged_df[:100].iterrows())
 # %%
