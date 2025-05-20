@@ -137,7 +137,7 @@ def Fourier_transform(filename):
 	asteroid_e_freqs = np.array(list(ecc_fmft_result.keys()))
 	asteroid_e_freqs_arcsec_per_yr = asteroid_e_freqs * 60*60*180/np.pi * (2*np.pi)
 
-	g_list = [filename, row['g']]
+	g_list = [filename, row['g'].values[0]]
 	for g in asteroid_e_freqs[:4]:
 		g_list.append(g)
 
@@ -146,5 +146,5 @@ def Fourier_transform(filename):
 with Pool(20) as p:
 	g_table = p.map(Fourier_transform, file_names)
 	df = pd.DataFrame(g_table)
-	df.to_excel("Fourier Transform results")
+	df.to_csv("Fourier Transform results.csv")
 	
