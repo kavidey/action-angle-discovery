@@ -7,8 +7,10 @@ import pandas as pd
 
 import rebound as rb
 import celmech as cm
+
+outer_only = True
 # %%
-integration_path = Path("integrations") / "full_system"
+integration_path = Path("integrations") / ("outer_planets" if outer_only else "full_system")
 integration_path.mkdir(parents=True, exist_ok=True)
 # %%
 # Read the table with the defined column specifications
@@ -26,6 +28,9 @@ merged_df = pd.merge(df, labels, on="Des'n", how="inner")
 def run_sim(r):
     idx, row = r
     sim = rb.Simulation('planets.bin')
+    if outer_only:
+        for i in range(4):
+            sim.remove(1)
     sim.add(a=row['a'], e=row['e'], inc=row['Incl.']*np.pi/180, Omega=row['Node']*np.pi/180, omega=row['Peri.']*np.pi/180, M=row['M'], primary=sim.particles[0])
 
     ps = sim.particles
