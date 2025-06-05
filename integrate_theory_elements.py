@@ -157,8 +157,9 @@ def ecc_inc_prediction(r):
 
 	u = u0
 	y = soln_h.y
+	t = soln_h.t
 
-	np.savez(integration_path / f"integration_results_{row["Des'n"]}", u=u, y=y)
+	np.savez(integration_path / f"integration_results_{row["Des'n"]}", u=u, y=y, t=t)
 # %%
-with Pool(70) as p:
+with Pool(40) as p:
 	table = p.map(ecc_inc_prediction, merged_df.iterrows())
