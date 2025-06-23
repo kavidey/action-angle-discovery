@@ -8,7 +8,7 @@ import pandas as pd
 import rebound as rb
 import celmech as cm
 
-outer_only = False
+outer_only = True
 print(f"Outer Planets Only: {outer_only}")
 # %%
 integration_path = Path("integrations") / ("outer_planets" if outer_only else "full_system")
@@ -57,15 +57,15 @@ def run_sim(r):
     sim.dt = ps[1].P/100.
     sim.ri_whfast.safe_mode = 0
 
-    Tfin_approx = 1.5e6*ps[-1].P
+    Tfin_approx = 5e7*ps[-1].P
     total_steps = np.ceil(Tfin_approx / sim.dt)
     Tfin = total_steps * sim.dt + sim.dt
-    Nout = 262144
+    Nout = 20_000
 
     sim_file = integration_path / f"asteroid_integration_{row["Des'n"]}.sa"
     sim.save_to_file(str(sim_file), step=int(np.floor(total_steps/Nout)), delete_file=True)
     sim.integrate(Tfin, exact_finish_time=0)
 # %%
-with Pool(20) as p:
-      p.map(run_sim, merged_df[:100].iterrows())
+with Pool(40) as p:
+      p.map(run_sim, merged_df[:1000].iterrows())
 # %%

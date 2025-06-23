@@ -8,3 +8,4 @@ checkpoints
 *.sa
 *.DAT
 integrations
+merged_elements.csv
