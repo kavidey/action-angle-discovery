@@ -9,3 +9,4 @@ checkpoints
 *.DAT
 integrations
 merged_elements.csv
+models
