@@ -8,6 +8,10 @@ import pandas as pd
 import rebound as rb
 import celmech as cm
 
+import sys
+sys.path.insert(0, 'SBDynT/src')
+import sbdynt as sbd
+
 outer_only = True
 print(f"Outer Planets Only: {outer_only}")
 # %%
@@ -34,17 +38,49 @@ asteroid_time = {
 start_time = 2460200.5
 # %%
 sim = rb.Simulation()
-date = "JD"+str(start_time)
-sim.add("Sun", date=date)
+# date = "JD"+str(start_time)
+# sim.add("Sun", date=date)
+# if not outer_only:
+#     sim.add("Mercury", date=date)
+#     sim.add("Venus", date=date)
+#     sim.add("Earth", date=date)
+#     sim.add("Mars", date=date)
+# sim.add("Jupiter", date=date)
+# sim.add("Saturn", date=date)
+# sim.add("Uranus", date=date)
+# sim.add("Neptune", date=date)
+(flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='sun',epoch=start_time)
+if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
 if not outer_only:
-    sim.add("Mercury", date=date)
-    sim.add("Venus", date=date)
-    sim.add("Earth", date=date)
-    sim.add("Mars", date=date)
-sim.add("Jupiter", date=date)
-sim.add("Saturn", date=date)
-sim.add("Uranus", date=date)
-sim.add("Neptune", date=date)
+    (flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='mercury',epoch=start_time)
+    if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+    (flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='venus',epoch=start_time)
+    if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+    (flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='earth',epoch=start_time)
+    if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+    (flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='mars',epoch=start_time)
+    if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+(flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='jupiter',epoch=start_time)
+if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+(flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='saturn',epoch=start_time)
+if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+(flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='uranus',epoch=start_time)
+if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+(flag, mass, radius, [plx,ply,plz],[plvx,plvy,plvz]) = sbd.query_horizons_planets(obj='neptune',epoch=start_time)
+if flag: sim.add(m=mass, x=plx, y=ply, z=plz, vx=plvx/(np.pi*2), vy=plvy/(np.pi*2), vz=plvz/(np.pi*2))
+
+if outer_only:
+    assert len(sim.particles) == 5, "Error adding planets"
+else:
+    assert len(sim.particles) == 9, "Error adding planets"
+
 sim.save_to_file(str(integration_path/"planets.bin"))
 # %%
 def run_sim(r):
