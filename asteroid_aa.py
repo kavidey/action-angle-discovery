@@ -421,7 +421,7 @@ for i,asteroid in enumerate(target_asteroids):
     for j,qty in enumerate(qtys):
         if i == 0:
             axs[i,j].set_title(qty)
-        axs[i,j].hist(df[df["Des'n"].str.contains(asteroid)][qty])
+        axs[i,j].hist(df[df["Des'n"].str.contains(asteroid)][qty], bins=20)
         axs[i,j].axvline(row[qty].item(), linestyle="--", color="black")
 plt.tight_layout()
 # %%

@@ -30,7 +30,7 @@ integration_path.mkdir(parents=True, exist_ok=True)
 # labels = pd.read_fwf('proper_catalog24.dat', colspecs=[[0,10], [10,18], [19,28], [29,37], [38, 46], [47,55], [56,66], [67,78], [79,85], [86, 89], [90, 97]], header=None, index_col=False, names=['propa', 'da', 'prope', 'de', 'propsini', 'dsini', 'g', 's', 'H', 'NumOpps', "Des'n"])
 
 # merged_df = pd.merge(df, labels, on="Des'n", how="inner")
-merged_df = pd.read_csv("tables_for_analysis/uncertainty_asteroid_testing.csv", index_col=0)
+merged_df = pd.read_csv("tables_for_analysis/uncertainty_asteroids_sampled.csv", index_col=0)
 asteroid_time = {
     "K23Q65H": 2460193.500000,
     "K23Q67X": 2460180.500000
@@ -90,12 +90,14 @@ def run_sim(r):
     #     for i in range(4):
     #         sim.remove(1)
     sim = rb.Simulation(str(integration_path/'planets.bin'))
-    rel_int_time = (asteroid_time[row["Des'n"]]-start_time) / ((1/(2.*np.pi))*365.25)
+    rel_int_time = (row["epoch"]-start_time) / ((1/(2.*np.pi))*365.25)
     sim.integrate(rel_int_time)
     sim.move_to_hel()
     # sim.add(a=row['a'], e=row['e'], inc=row['Incl.']*np.pi/180, Omega=row['Node']*np.pi/180, omega=row['Peri.']*np.pi/180, M=row['M'], primary=sim.particles[0])
     sim.add(x=row['x'], y=row['y'], z=row['z'], vx=row['vx']/(np.pi*2), vy=row['vy']/(np.pi*2), vz=row['vz']/(np.pi*2))
     sim.move_to_com()
+
+    sim.exit_max_distance = 50.
 
     ps = sim.particles
     ps[-1].a
@@ -104,10 +106,10 @@ def run_sim(r):
     sim.dt = ps[1].P/100.
     sim.ri_whfast.safe_mode = 0
 
-    Tfin_approx = 5e7*ps[-1].P
+    Tfin_approx = 3e7*ps[-1].P
     total_steps = np.ceil(Tfin_approx / sim.dt)
     Tfin = total_steps * sim.dt + sim.dt
-    Nout = 50_000
+    Nout = 25_000
 
     sim_file = integration_path / f"asteroid_integration_{row["Des'n"]}-{idx}.sa"
     sim.save_to_file(str(sim_file), step=int(np.floor(total_steps/Nout)), delete_file=True)
