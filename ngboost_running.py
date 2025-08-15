@@ -41,7 +41,7 @@ import numpy as np
 import time
 from sklearn.tree import DecisionTreeRegressor
 # %%
-features = ['sinicosO', 'sinisinO', 'ecospo', 'esinpo', 'propa', 's0', 'propsini_h']
+features = ['sinicosO', 'sinisinO', 'ecospo', 'esinpo', 'propa', 'g0', 'prope_h']
 data = merged_df[features]
 dela = merged_df['propa']-merged_df['a']
 dele = merged_df['prope']-merged_df['e']
@@ -49,7 +49,7 @@ delsini = merged_df['propsini']-np.sin(merged_df['Incl.']*np.pi/180)
 delg = merged_df['g0'] - merged_df['g']
 s = merged_df['s']
 
-trainX, testX, trainY, testY = train_test_split(data, delsini, test_size=0.4, random_state=42)
+trainX, testX, trainY, testY = train_test_split(data, dele, test_size=0.4, random_state=42)
 valX, testX, valY, testY = train_test_split(testX, testY, test_size=0.5, random_state=42)
 space = {
 	'max_depth': hp.qloguniform('max_depth', np.log(5), np.log(40), 1),
@@ -96,6 +96,6 @@ final_model = NGBRegressor(
 
 final_model.fit(trainX, trainY)
 
-ngb = Path("models/best_model_inc_val_2.ngb")
+ngb = Path("models/best_model_ecc_val_2.ngb")
 with ngb.open("wb") as f:
     pickle.dump(final_model, f)
