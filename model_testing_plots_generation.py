@@ -158,14 +158,14 @@ for filename in filenames:
         print(f"An unexpected error occurred while processing '{filename}': {e}. Skipping.")
 
 plt.hist(np.array(true_family_list)/np.array(detected_family_list) * 100)
-plt.xlabel("Precision of the test sample", size = 15)
+plt.xlabel("ML model precision", size = 15)
 plt.xticks(size = 15)
 plt.yticks(size = 15)
 plt.savefig("Precision_plot")
 plt.cla()
 
 plt.hist(np.array(true_family_list)/np.array(total_family_list) * 100)
-plt.xlabel("Percent of families detected", size = 15)
+plt.xlabel("Percent of Members in Family Detected", size = 15)
 plt.xticks(size = 15)
 plt.yticks(size = 15)
 plt.savefig("Percent_detected_plot")
