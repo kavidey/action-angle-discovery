@@ -46,18 +46,7 @@ simpler_secular_theory = SyntheticSecularTheory(
 	[truncate_dictionary(y_d,1e-3) for y_d in solar_system_synthetic_theory.y_dicts]
 )
 
-# df = pd.read_fwf('/home/lshen/action-angle-discovery/MPCORB.DAT', colspecs=[[0,7], [8,14], [15,19], [20,25], [26,35], [36,46], [47, 57], [58,68], [69,81], [82, 91], [92, 103]])
-# df = df[df['Epoch'] == 'K239D']
-
-# df.infer_objects()
-# for c in ['a', 'e', 'Incl.', 'Node', 'Peri.', 'M']:
-# 	df[c] = pd.to_numeric(df[c])
-
-# labels = pd.read_fwf('/home/lshen/action-angle-discovery/proper_catalog24.dat', colspecs=[[0,10], [10,18], [19,28], [29,37], [38, 46], [47,55], [56,66], [67,78], [79,85], [86, 89], [90, 97]], header=None, index_col=False, names=['propa', 'da', 'prope', 'de', 'propsini', 'dsini', 'g', 's', 'H', 'NumOpps', "Des'n"])
-
-# merged_df = pd.merge(df, labels, on="Des'n", how="inner")
-
-merged_df = pd.read_csv("/home/lshen/action-angle-discovery/tables_for_analysis/uncertainty_testing_merged.csv")
+merged_df = pd.read_csv("merged_elements.csv")
 
 def ecc_inc_prediction(r):
 	idx, row = r
@@ -68,7 +57,6 @@ def ecc_inc_prediction(r):
 		inc=row['Incl.'] * np.pi / 180,
 		Omega=row['Node'] * np.pi / 180,
 		omega=row['Peri.'] * np.pi / 180,
-		# M=row['M'],
 		primary=sim.particles[0]
 	)
 	sim.particles[5].m
@@ -87,7 +75,7 @@ def ecc_inc_prediction(r):
 
 
 	X = np.sqrt(2*(1-np.sqrt(1-e**2))) * np.exp(1j * omega)
-	Y = (1-e**2)**(0.25) * np.sin(0.5 * inc) * np.exp(1j * Omega)
+	Y = 2*(1-e**2)**(0.25) * np.sin(0.5 * inc) * np.exp(1j * Omega)
 	tp_h = TestParticleSecularHamiltonian(row['propa'], simpler_secular_theory)
 
 	# leading order Hamiltonian
