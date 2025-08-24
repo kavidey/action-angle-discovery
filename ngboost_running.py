@@ -21,7 +21,7 @@ Path("tables_for_analysis").mkdir(exist_ok=True)
 
 merged_df = pd.read_csv("merged_elements.csv")
 # %%
-features_e = ['sinicosO', 'sinisinO', 'ecospo', 'esinpo', 'propa', 'g0', 's0', 'prope_h', 'propsini_h']
+features_ecc = ['sinicosO', 'sinisinO', 'ecospo', 'esinpo', 'propa', 'g0', 's0', 'prope_h', 'propsini_h']
 features_inc = ['sinicosO', 'sinisinO', 'ecospo', 'esinpo', 'propa', 'g0', 's0', 'prope_h', 'propsini_h']
 features = features_inc
 
@@ -58,9 +58,9 @@ def objective(params):
 trials = Trials()
 start = time.time()
 
-best = fmin(fn=objective, space = space, algo = tpe.suggest, max_evals = 15, trials = trials, rstate=np.random.default_rng(seed=0))
+# best = fmin(fn=objective, space = space, algo = tpe.suggest, max_evals = 15, trials = trials, rstate=np.random.default_rng(seed=0))
 end = time.time()
-print("Best hyperparameters:", best)
+# print("Best hyperparameters:", best)
 print("Optimization Time: %.2f seconds" % (end - start))
 # %%
 best_ecc = {'minibatch_frac': 0.497938840723922, 'learning_rate': 0.0403467366109875, 'max_depth': 22.0}

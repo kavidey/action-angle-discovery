@@ -22,10 +22,8 @@ from hadden_theory import test_particle_secular_hamiltonian
 import sys
 sys.modules['test_particle_secular_hamiltonian'] = test_particle_secular_hamiltonian
 # %%
-integration_path = Path("/home/lshen/action-angle-discovery/integrations") / ("uncertainty_testing_linear")
+integration_path = Path("integrations") / "ecc_inc_no_integration"
 integration_path.mkdir(parents=True, exist_ok=True)
-
-simulation_path = "/home/lshen/action-angle-discovery/integrations/simulation_files/"
 # %%
 try:
 	with open("hadden_theory/solar_system_synthetic_solution.bin","rb") as fi:
