@@ -16,14 +16,14 @@ from celmech.disturbing_function import list_secular_terms
 from celmech.poisson_series import PoissonSeries
 from celmech.rk_integrator import RKIntegrator
 
-from hadden_theory.test_particle_secular_hamiltonian import SyntheticSecularTheory, TestParticleSecularHamiltonian
+from hadden_theory.test_particle_secular_hamiltonian import SyntheticSecularTheory, TestParticleSecularHamiltonian, calc_g0_and_s0
 from hadden_theory import test_particle_secular_hamiltonian
 # hack to make pickle load work
 import sys
 sys.modules['test_particle_secular_hamiltonian'] = test_particle_secular_hamiltonian
 # %%
-integration_path = Path("integrations") / "ecc_inc_no_integration"
-integration_path.mkdir(parents=True, exist_ok=True)
+prediction_path = Path("linear_predictions")
+prediction_path.mkdir(parents=True, exist_ok=True)
 # %%
 try:
 	with open("hadden_theory/solar_system_synthetic_solution.bin","rb") as fi:
@@ -44,7 +44,15 @@ simpler_secular_theory = SyntheticSecularTheory(
 	[truncate_dictionary(y_d,1e-3) for y_d in solar_system_synthetic_theory.y_dicts]
 )
 
-merged_df = pd.read_csv("merged_elements.csv")
+df = pd.read_fwf('MPCORB.DAT', colspecs=[[0,7], [8,14], [15,19], [20,25], [26,35], [36,46], [47, 57], [58,68], [69,81], [82, 91], [92, 103]])
+df = df[df['Epoch'] == 'K239D'] # take only ones at common epoch--almost all of them
+for c in ['a', 'e', 'Incl.', 'Node', 'Peri.', 'M']:
+	df[c] = pd.to_numeric(df[c])
+
+labels = pd.read_fwf('proper_catalog24.dat', colspecs=[[0,10], [10,18], [19,28], [29,37], [38, 46], [47,55], [56,66], [67,78], [79,85], [86, 89], [90, 97]], header=None, index_col=False, names=['propa', 'da', 'prope', 'de', 'propsini', 'dsini', 'g', 's', 'H', 'NumOpps', "Des'n"])
+
+nesvorny_df = pd.merge(df, labels, on="Des'n", how="inner")
+nesvorny_df.to_csv("nesvorny_catalog_dataset.csv")
 
 def ecc_inc_prediction(r):
 	idx, row = r
@@ -96,8 +104,10 @@ def ecc_inc_prediction(r):
 
 	u0 = X - np.sum(list(tp_h.F_e.values()))
 	v0 = Y - np.sum(list(tp_h.F_inc.values()))
+	g0 = calc_g0_and_s0(a, simpler_secular_theory)[0]
+	s0 = calc_g0_and_s0(a, simpler_secular_theory)[1]
 
-	np.savez(integration_path / f"integration_results_{row["Des'n"]}", u=u0, v = v0)
+	np.savez(prediction_path / f"linear_prediction_results_{row["Des'n"]}", u=u0, v = v0, g=g0, s=s0)
 # %%
 with Pool(40) as p:
-	table = p.map(ecc_inc_prediction, merged_df.iterrows())
+	table = p.map(ecc_inc_prediction, nesvorny_df.iterrows())
